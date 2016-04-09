@@ -1,7 +1,10 @@
 require "rchess/version"
 
+
 @turn = 'w'
 @board = {}
+@w_pieces = %w[♖ ♘ ♗ ♕ ♔ ♙]
+@b_pieces = %w[♜ ♞ ♝ ♛ ♚ ♟]
 
 def to_cell pos
   return pos[1].to_i-1, pos[0].ord%97
@@ -13,14 +16,14 @@ def reset_game
   # board[0][7] -> h1
   # board[7][7] -> h8
   @board = [
-    '♜♞♝♛♚♝♞♜'.split(''),
-    '♟♟♟♟♟♟♟♟'.split(''),
-    '        '.split(''),
-    '        '.split(''),
-    '        '.split(''),
-    '        '.split(''),
+    '♖♘♗♕♔♗♘♖'.split(''),
     '♙♙♙♙♙♙♙♙'.split(''),
-    '♖♘♗♕♔♗♘♖'.split('')
+    '        '.split(''),
+    '        '.split(''),
+    '        '.split(''),
+    '        '.split(''),
+    '♟♟♟♟♟♟♟♟'.split(''),
+    '♜♞♝♛♚♝♞♜'.split('')
   ]
 end
 
@@ -41,16 +44,14 @@ def next_move
   gets.split
 end
 
-@w_pieces = %w[♜ ♞ ♝ ♛ ♚ ♟]
-@b_pieces = %w[♖ ♘ ♗ ♕ ♔ ♙]
-
 def is_valid move
   return 'syntax' unless move[0] =~ /[a-h][1-8]/ && move[1] =~ /[a-h][1-8]/
 
   s_rank, s_file = to_cell(move[0])
   d_rank, d_file = to_cell(move[1])
+  piece = @board[s_rank][s_file]
 
-  return 'not your piece' unless (@turn == 'w' ? @w_pieces : @b_pieces).include?(@board[s_rank][s_file])
+  return "not your piece #{piece}" unless (@turn == 'w' ? @w_pieces : @b_pieces).include?(piece)
 
   # piece movement (incl capture, en passent)
   # line of sight
