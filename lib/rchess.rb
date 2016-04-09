@@ -1,6 +1,5 @@
 require "rchess/version"
 
-
 @turn = 'w'
 @board = {}
 @w_pieces = %w[♖ ♘ ♗ ♕ ♔ ♙]
@@ -45,13 +44,17 @@ def next_move
 end
 
 def is_valid move
-  return 'syntax' unless move[0] =~ /[a-h][1-8]/ && move[1] =~ /[a-h][1-8]/
+  unless move[0] =~ /[a-h][1-8]/ && move[1] =~ /[a-h][1-8]/
+    return 'syntax'
+  end
 
   s_rank, s_file = to_cell(move[0])
   d_rank, d_file = to_cell(move[1])
   piece = @board[s_rank][s_file]
 
-  return "not your piece #{piece}" unless (@turn == 'w' ? @w_pieces : @b_pieces).include?(piece)
+  unless (@turn == 'w' ? @w_pieces : @b_pieces).include?(piece)
+    return "not your piece #{piece}"
+  end
 
   # piece movement (incl capture, en passent)
   # line of sight
