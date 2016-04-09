@@ -29,7 +29,27 @@ bin/console
 
 Enter moves using source/target cells:
 ```
-e2 e4
+8 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+7 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+6
+5
+4
+3
+2 ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+1 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+  a b c d e f g h
+w> e2 e4
+
+8 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+7 ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+6
+5
+4         ♟
+3
+2 ♟ ♟ ♟ ♟   ♟ ♟ ♟
+1 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+  a b c d e f g h
+b>
 ```
 
 ## Development
