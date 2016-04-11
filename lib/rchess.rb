@@ -58,23 +58,23 @@ def get_valid_moves(mode, s_move, *arg)
   arg.each do |dir|
     catch :sight do
       (mode == :fixed ? 1..1 : 1..7).each do |dist|
-        rel_cell = dir.map{|x| x*dist}
-        think_rank = s_move[0] + rel_cell[0]
-        think_file = s_move[1] + rel_cell[1]
+        r_cell = dir.map{ |x| x*dist }
+        t_rank = s_move[0] + r_cell[0]
+        t_file = s_move[1] + r_cell[1]
         # check bounds
-        throw :sight unless (0..7).include?(think_rank) && (0..7).include?(think_file)
-        think_cell = [think_rank, think_file]
-        think_piece = @board[think_rank, think_file]
-        debug "thinking about: rel=#{rel_cell}, cell=#{think_cell}, piece=#{think_piece}"
-        if think_piece == ' '
+        throw :sight unless [t_rank, t_file].all?{ |t| (0..7).include?(t) }
+        t_cell = [t_rank, t_file]
+        t_piece = @board[t_rank, t_file]
+        debug "thinking about: rel=#{r_cell}, cell=#{t_cell}, piece=#{t_piece}"
+        if t_piece == ' '
           # vacant, add
-          valid_moves.push(think_cell)
-        elsif (@turn == 'w') == (@w_pieces.include?(think_piece))
+          valid_moves.push(t_cell)
+        elsif (@turn == 'w') == (@w_pieces.include?(t_piece))
           # same piece type, cannot add, go to next sight
           throw :sight
-        elsif (@turn == 'w') != (@w_pieces.include?(think_piece))
+        elsif (@turn == 'w') != (@w_pieces.include?(t_piece))
           # different piece type, add, go to next sight
-          valid_moves.push(think_cell)
+          valid_moves.push(t_cell)
           throw :sight
         end
       end
@@ -138,7 +138,7 @@ def winner
 end
 
 def debug msg
-  puts msg
+  # puts msg
 end
 
 loop do
