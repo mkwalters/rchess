@@ -120,17 +120,17 @@ def is_valid move
     return 'syntax'
   end
 
-  s_rank, s_file = internalize(move[0])
-  d_rank, d_file = internalize(move[1])
+  s_rank, s_file = internalize(move[0]) # source
+  d_rank, d_file = internalize(move[1]) # destination
+  s_move = [s_rank, s_file]
+  d_move = [d_rank, d_file]
   piece = get_piece(s_rank, s_file)
+  debug "s_move: #{s_move}, d_move: #{d_move}, piece: #{piece}"
 
   unless (@turn == 'w' ? @w_pieces : @b_pieces).include?(piece)
     return "not your piece '#{piece}'"
   end
 
-  s_move = [s_rank, s_file]
-  d_move = [d_rank, d_file]
-  debug "s_move: #{s_move}, d_move: #{d_move}"
   case piece
   when '♖', '♜'
     valid_moves = get_valid_moves(:look, s_move, [-1, 0], [1, 0], [0, -1], [0, 1])
