@@ -113,9 +113,13 @@ def is_valid move
     # todo castle
   when '♙'
     valid_moves = get_valid_moves(:fixed, s_move, [1, 0])
-    # todo two jump, capture, en passent
+    # todo capture, en passent
+    valid_moves += get_valid_moves(:fixed, s_move, [2, 0]) if s_move[0] == 1
+
+
   when '♟'
     valid_moves = get_valid_moves(:fixed, s_move, [-1, 0])
+    valid_moves += get_valid_moves(:fixed, s_move, [-2, 0]) if s_move[0] == 6
   end
   valid_moves.include?(d_move) ? true : "valid moves for #{piece}: #{valid_moves.map{ |move| to_ui(move[0], move[1]) }}"
 end
