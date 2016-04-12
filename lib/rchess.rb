@@ -19,6 +19,14 @@ def externalize move
   return "#{(move[1]+97).chr}#{move[0]+1}"
 end
 
+def get_piece(rank, file)
+  @board[rank, file]
+end
+
+def set_piece(rank, file, piece)
+  @board[rank, file] = piece
+end
+
 def reset_game
   # board[0, 0] -> a1
   # board[7, 0] -> a8
@@ -42,7 +50,7 @@ def print_game
     row = rank == 0 ? '  ' : "#{rank} "
     ('a'..'h').each do |file|
       c_rank, c_file = internalize([file, rank])
-      row += rank == 0 ? "#{file} " : "#{@board[c_rank, c_file]} "
+      row += rank == 0 ? "#{file} " : "#{get_piece(c_rank, c_file)} "
     end
     puts row
   end
@@ -64,7 +72,7 @@ def get_valid_moves(mode, s_move, *arg)
         # check bounds
         throw :sight unless [t_rank, t_file].all?{ |t| (0..7).include?(t) }
         t_cell = [t_rank, t_file]
-        t_piece = @board[t_rank, t_file]
+        t_piece = get_piece(t_rank, t_file)
         debug "thinking about: rel=#{r_cell}, cell=#{t_cell}, piece=#{t_piece}"
         if t_piece == ' '
           # vacant, add
@@ -87,11 +95,11 @@ def get_valid_pawn_moves(s_rank, s_file, op)
   valid_moves = []
   # forward
   t_rank, t_file = s_rank.send(op, 1), s_file
-  if @board[t_rank, t_file] == ' '
+  if get_piece(t_rank, t_file) == ' '
     valid_moves.push([t_rank, t_file])
     # forward twice
     t_rank, t_file = s_rank.send(op, 2), s_file
-    if @board[t_rank, t_file] == ' '
+    if get_piece(t_rank, t_file) == ' ' && (op == :+ ? s_rank == 1 : s_rank == 6)
       valid_moves.push([t_rank, t_file])
     end
   end
@@ -99,7 +107,7 @@ def get_valid_pawn_moves(s_rank, s_file, op)
   other_pieces = op == :+ ? @b_pieces : @w_pieces
   [[s_rank.send(op, 1), s_file+1], [s_rank.send(op, 1), s_file-1]].each do |t_cell|
     t_rank, t_file = t_cell[0], t_cell[1]
-    if other_pieces.include?(@board[t_rank, t_file])
+    if other_pieces.include?(get_piece(t_rank, t_file))
       valid_moves.push([t_rank, t_file])
     end
   end
@@ -114,7 +122,7 @@ def is_valid move
 
   s_rank, s_file = internalize(move[0])
   d_rank, d_file = internalize(move[1])
-  piece = @board[s_rank, s_file]
+  piece = get_piece(s_rank, s_file)
 
   unless (@turn == 'w' ? @w_pieces : @b_pieces).include?(piece)
     return "not your piece '#{piece}'"
@@ -126,19 +134,17 @@ def is_valid move
   case piece
   when '♖', '♜'
     valid_moves = get_valid_moves(:look, s_move, [-1, 0], [1, 0], [0, -1], [0, 1])
-  when '♝', '♗'
+  when '♗', '♝'
     valid_moves = get_valid_moves(:look, s_move, [-1, -1], [1, -1], [1, 1], [-1, 1])
-  when '♞', '♘'
+  when '♘', '♞'
     valid_moves = get_valid_moves(:fixed, s_move, [-2, -1], [-2, 1], [-1, 2], [1, 2], [2, 1], [2, -1], [1, -2], [-1, -2])
-  when '♛', '♕'
+  when '♕', '♛'
     valid_moves = get_valid_moves(:look, s_move, [-1, -1], [1, -1], [1, 1], [-1, 1], [-1, 0], [1, 0], [0, -1], [0, 1])
-  when '♚', '♔'
+  when '♔', '♚'
     valid_moves = get_valid_moves(:fixed, s_move, [-1, -1], [1, -1], [1, 1], [-1, 1], [-1, 0], [1, 0], [0, -1], [0, 1])
     # todo castle, check, move into check
-  when '♙'
-    valid_moves = get_valid_pawn_moves(s_rank, s_file, :+)
-  when '♟'
-    valid_moves = get_valid_pawn_moves(s_rank, s_file, :-)
+  when '♙', '♟'
+    valid_moves = get_valid_pawn_moves(s_rank, s_file, piece == '♙' ? :+ : :-)
   end
   valid_moves.include?(d_move) ? true : "valid moves for #{piece}: #{valid_moves.map{ |move| externalize(move) }}"
 end
@@ -147,14 +153,14 @@ def make_move move
   s_rank, s_file = internalize(move[0])
   d_rank, d_file = internalize(move[1])
 
-  @board[d_rank, d_file] = @board[s_rank, s_file]
-  @board[s_rank, s_file] = ' '
+  set_piece(d_rank, d_file, get_piece(s_rank, s_file))
+  set_piece(s_rank, s_file, ' ')
   # promotion, auto-promote to queen
-  if '♙' == @board[d_rank, d_file] && d_rank == 7
-    @board[d_rank, d_file] = '♕'
+  if '♙' == get_piece(d_rank, d_file) && d_rank == 7
+    set_piece(d_rank, d_file, '♕')
   end
-  if '♟' == @board[d_rank, d_file] && d_rank == 0
-    @board[d_rank, d_file] = '♛'
+  if '♟' == get_piece(d_rank, d_file) && d_rank == 0
+    set_piece(d_rank, d_file, '♛')
   end
   @turn = @turn == 'w' ? 'b' : 'w'
 end
