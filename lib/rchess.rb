@@ -11,12 +11,12 @@ end
 @w_pieces = %w[♖ ♘ ♗ ♕ ♔ ♙].freeze
 @b_pieces = %w[♜ ♞ ♝ ♛ ♚ ♟].freeze
 
-def to_coord rank, file
-  return rank.to_i-1, file.ord%97
+def internalize move
+  return move[1].to_i-1, move[0].ord%97
 end
 
-def to_ui rank, file
-  return "#{(file+97).chr}#{rank+1}"
+def externalize move
+  return "#{(move[1]+97).chr}#{move[0]+1}"
 end
 
 def reset_game
@@ -41,7 +41,7 @@ def print_game
   (0..8).reverse_each do |rank|
     row = rank == 0 ? '  ' : "#{rank} "
     ('a'..'h').each do |file|
-      c_rank, c_file = to_coord(rank, file)
+      c_rank, c_file = internalize([file, rank])
       row += rank == 0 ? "#{file} " : "#{@board[c_rank, c_file]} "
     end
     puts row
@@ -112,8 +112,8 @@ def is_valid move
     return 'syntax'
   end
 
-  s_rank, s_file = to_coord(move[0][1], move[0][0])
-  d_rank, d_file = to_coord(move[1][1], move[1][0])
+  s_rank, s_file = internalize(move[0])
+  d_rank, d_file = internalize(move[1])
   piece = @board[s_rank, s_file]
 
   unless (@turn == 'w' ? @w_pieces : @b_pieces).include?(piece)
@@ -140,12 +140,12 @@ def is_valid move
   when '♟'
     valid_moves = get_valid_pawn_moves(s_rank, s_file, :-)
   end
-  valid_moves.include?(d_move) ? true : "valid moves for #{piece}: #{valid_moves.map{ |move| to_ui(move[0], move[1]) }}"
+  valid_moves.include?(d_move) ? true : "valid moves for #{piece}: #{valid_moves.map{ |move| externalize(move) }}"
 end
 
 def make_move move
-  s_rank, s_file = to_coord(move[0][1], move[0][0])
-  d_rank, d_file = to_coord(move[1][1], move[1][0])
+  s_rank, s_file = internalize(move[0])
+  d_rank, d_file = internalize(move[1])
 
   @board[d_rank, d_file] = @board[s_rank, s_file]
   @board[s_rank, s_file] = ' '
