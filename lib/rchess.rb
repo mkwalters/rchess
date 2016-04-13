@@ -10,6 +10,7 @@ end
 @board = nil
 @w_pieces = %w[♖ ♘ ♗ ♕ ♔ ♙].freeze
 @b_pieces = %w[♜ ♞ ♝ ♛ ♚ ♟].freeze
+@history = []
 
 def internalize move
   return move[1].to_i-1, move[0].ord%97
@@ -162,6 +163,7 @@ def make_move move
   if '♟' == get_piece(d_rank, d_file) && d_rank == 0
     set_piece(d_rank, d_file, '♛')
   end
+  @history.push([[s_file, s_rank],[d_file, d_rank]])
   @turn = @turn == 'w' ? 'b' : 'w'
 end
 
