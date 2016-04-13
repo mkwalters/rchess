@@ -4,6 +4,10 @@ Welcome to Rchess!
 
 Rchess is a command line chess engine for humans.
 
+## Build Status
+
+[![Build Status](https://travis-ci.org/tehsven/rchess.svg?branch=master)](https://travis-ci.org/tehsven/rchess)
+
 ## Installation
 
 Add this line to your application's Gemfile:
