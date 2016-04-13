@@ -113,6 +113,40 @@ def get_valid_pawn_moves(s_rank, s_file, op)
     end
   end
   # todo en passent
+
+  ##### En Passant still does not capture the piece #####
+
+  #white:
+  if s_rank == 4
+    #checking left:
+    if @board[s_rank, s_file - 1] == "♟"
+      if [@history.last[0], @history.last[1]]  == [[s_rank + 2, s_file - 1], [s_rank, s_file - 1]]
+        valid_moves.push([s_rank + 1, s_file - 1])
+      end
+    end
+    #checking right:
+    if @board[s_rank, s_file + 1] == "♟"
+      if [@history.last[0], @history.last[1]]  == [[s_rank + 2, s_file + 1], [s_rank, s_file + 1]]
+        valid_moves.push([s_rank + 1, s_file + 1])
+      end
+    end
+  end
+  #black:
+  if s_rank == 3
+    #checking left:
+    if @board[s_rank, s_file - 1] == "♙"
+      if [@history.last[0], @history.last[1]]  == [[s_rank - 2, s_file - 1], [s_rank, s_file - 1]]
+        valid_moves.push([s_rank - 1, s_file - 1])
+      end
+    end
+    #checking right:
+    if @board[s_rank, s_file + 1] == "♙"
+      if [@history.last[0], @history.last[1]]  == [[s_rank - 2, s_file + 1], [s_rank, s_file + 1]]
+        valid_moves.push([s_rank - 1, s_file + 1])
+      end
+    end
+  end 
+
   valid_moves
 end
 
@@ -147,7 +181,7 @@ def is_valid move
   when '♙', '♟'
     valid_moves = get_valid_pawn_moves(s_rank, s_file, piece == '♙' ? :+ : :-)
   end
-  valid_moves.include?(d_move) ? true : "valid moves for #{piece}: #{valid_moves.map{ |move| externalize(move) }}"
+  valid_moves && (valid_moves.include?(d_move) ? true : "valid moves for #{piece}: #{valid_moves.map{ |move| externalize(move) }}")
 end
 
 def make_move move
@@ -163,7 +197,7 @@ def make_move move
   if '♟' == get_piece(d_rank, d_file) && d_rank == 0
     set_piece(d_rank, d_file, '♛')
   end
-  @history.push([[s_file, s_rank],[d_file, d_rank]])
+  @history.push([[s_rank, s_file],[d_rank, d_file]])
   @turn = @turn == 'w' ? 'b' : 'w'
 end
 
