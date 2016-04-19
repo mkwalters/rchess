@@ -112,41 +112,14 @@ def get_valid_pawn_moves(s_rank, s_file, op)
       valid_moves.push([t_rank, t_file])
     end
   end
-  # todo en passent
-
-  ##### En Passant still does not capture the piece #####
-
-  #white:
-  if s_rank == 4
-    #checking left:
-    if @board[s_rank, s_file - 1] == "♟"
-      if [@history.last[0], @history.last[1]]  == [[s_rank + 2, s_file - 1], [s_rank, s_file - 1]]
-        valid_moves.push([s_rank + 1, s_file - 1])
-      end
-    end
-    #checking right:
-    if @board[s_rank, s_file + 1] == "♟"
-      if [@history.last[0], @history.last[1]]  == [[s_rank + 2, s_file + 1], [s_rank, s_file + 1]]
-        valid_moves.push([s_rank + 1, s_file + 1])
-      end
+  #en passant
+  #capture piece if this move is chosen.
+  [[s_rank, s_file-1], [s_rank, s_file+1]].each do |opponent_cell|
+    t_rank, t_file = opponent_cell[0].send(op, 1), opponent_cell[1]
+    if get_piece(opponent_cell[0], opponent_cell[1]) == other_pieces[5]
+      valid_moves.push([t_rank, t_file]) if @history.last == [[opponent_cell[0].send(op, 2), opponent_cell[1]], [opponent_cell[0], opponent_cell[1]]]
     end
   end
-  #black:
-  if s_rank == 3
-    #checking left:
-    if @board[s_rank, s_file - 1] == "♙"
-      if [@history.last[0], @history.last[1]]  == [[s_rank - 2, s_file - 1], [s_rank, s_file - 1]]
-        valid_moves.push([s_rank - 1, s_file - 1])
-      end
-    end
-    #checking right:
-    if @board[s_rank, s_file + 1] == "♙"
-      if [@history.last[0], @history.last[1]]  == [[s_rank - 2, s_file + 1], [s_rank, s_file + 1]]
-        valid_moves.push([s_rank - 1, s_file + 1])
-      end
-    end
-  end 
-
   valid_moves
 end
 
